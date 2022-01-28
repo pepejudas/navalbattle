@@ -1,0 +1,159 @@
+%% Proyecto Final de Programación
+% Autores: Alexa Miryany Bastidas Ramos
+%          Paula Andrea Beltrán Ortiz
+%          Santiago Castro Henao
+%          José Esteban Yopasa Balbuena
+% Descripción: Juego Batalla Naval
+
+clc;
+close all;
+clear all;
+
+disp("************************BATALLA NAVAL************************")
+disp("************************EQUIPO 2************************")
+embarcacion = input("TÚ PUEDES ELEGIR EL GRADO DE DIFICULTAD: 1-Porta aviones, 2-Acorazado, 3-Lancha: ");
+verEnAgua = input("TÚ PUEDES HACER UNOS DISPAROS DE PRUEBA EN EL AGUA. ¿QUIERE HACERLO? (1-SÍ, 2-NO): ");
+Z = embarcacion;
+Area = 8 + Z;
+
+Pantalla = zeros(Area);
+Tpantalla = Pantalla;
+Tpantalla(Area +1,:) = 0;
+Tpantalla(:,Area +1) = 1;
+Pantalla = Tpantalla;
+
+x = 1 + Area*rand;
+y = 1 + Area*rand;
+
+%si quieren este codigo se puede quitar
+%{
+Q = 1;
+while (Q)
+    Koji = rand * 3;
+    X = 0;
+    if (Koji > 2)
+        x = 1;
+    end
+    if (Koji < 1)
+        x = -1;
+    end
+
+    Koji = rand *3;
+       Y = 0;
+    if (Koji > 2)
+        Y = 1;
+    end
+    if (Koji < 1)
+        Y = -1;
+    end
+
+    x0 = X * 4 + x;
+    y0 = Y * 4 + y;
+    if (x0 > 0 && y0 > 0 && x0 <=Area && y0 <=Area)
+        Q = 0;
+    end
+    if (X == 0 && Y == 0)
+        Q = 1;
+    end
+end
+
+for W = 0:3
+    Pantalla(int8(x + W * X),int8(y + W * X))=1;
+end
+
+clear x0
+clear y0
+clear Koji
+clear X
+clear Y
+
+%}
+
+%establecer las posiciones del barco en la variable pantalla para
+%posteriormente evaluar cuando se hace click
+if(embarcacion==1)
+    pendiente = 4;
+elseif(embarcacion==2)
+    pendiente = 3
+elseif(embarcacion==3)
+    pendiente = 1
+end
+
+%establecer si es vertical u horizontal
+
+v = rand * 2;
+maxline = 10;
+
+posx = int8(rand * maxline);
+posy = int8(rand * maxline);
+
+% si cabe el barco entonces asignarlo a la matriz sino probar otra posicion
+while(posx + pendiente - 1 > maxline)
+posx = int8(rand * maxline);
+%posy = int8(rand * 11)    
+end
+
+%asignar a la matriz Pantalla las posiciones en 1
+for i=posx:pendiente+posx - 1
+    Pantalla(posy, i)=1;
+end
+
+    figure(2);
+    pcolor(0:Area,0:Area,Pantalla);
+
+if (verEnAgua == 1)
+    title('Tablero de prueba')
+    set(gca,'YTickLabel',{'K';'J';'I';'H';'G';'F';'D';'C';'B';'A'})
+    figure(1);
+end 
+
+text(10, 10, 'Name.............');
+disparos = 26-2*Z;
+
+while (disparos > 0 && pendiente >0) 
+    Title = sprintf('Tu tienes %d disparos, por favor elige tu objetivo.', disparos);
+    pcolor(0:Area,0:Area,Tpantalla); 
+    title(Title)
+
+    set(gca,'YTickLabel',{'K';'J';'I';'H';'G';'F';'D';'C';'B';'A'})
+    Q =1;
+
+    while Q 
+        [x,y]=ginput(1);
+        D = int8(y+1);
+        E = int8(x+1);
+        
+        if (E > 0 && D > 0 && E <= Area && D <= Area)
+            Q = 0; 
+        end 
+    end
+    if (Pantalla (D,E) ==1)
+        disp('******** Muy bien acertaste    ********') 
+        disparos = disparos-1; 
+        pendiente =pendiente-1; 
+        Pantalla (D,E) =0.75;
+        Tpantalla (D,E)=0.75;
+
+    elseif (Pantalla (D,E)==0)
+        disp('VAMOS YA LO TIENES EN LA MIRA...DISPARA:' + disparos)
+        disparos = disparos -1; 
+        Pantalla(D,E) = 0.25;
+        Tpantalla (D,E) = 0.25; 
+    else 
+        disp('YA PUEDES HACER TU DISPARO: ' + disparos)
+    end
+end
+             
+       pcolor(0:Area,0:Area,Pantalla);
+       set(gca,'YTickLabel',{'K';'J';'I';'H';'G';'F';'D';'C';'B';'A'})
+
+       if (pendiente > 0)
+           Title = ('DOUP...PERDISTE'); 
+           title (Title)
+       elseif (pendiente ==0)
+           Title = ('CAMPEON');
+           title (Title)
+       else
+           Title = ('GANASTE ...PERO PUEDES SEGUIR JUGANDO');
+           title (Title)
+       end
